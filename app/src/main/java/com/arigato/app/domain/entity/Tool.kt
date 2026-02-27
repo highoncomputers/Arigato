@@ -20,6 +20,8 @@ data class Tool(
     val commandTemplate: String = "",
     val examples: List<CommandExample> = emptyList(),
     val requiresRoot: Boolean = false,
+    val rootRequired: String = "not_required",
+    val executionModeValue: String = "gui",
     val isInstalled: Boolean = false,
     val isFavorite: Boolean = false,
     val version: String? = null,
@@ -29,4 +31,18 @@ data class Tool(
 ) {
     val toolCategory: ToolCategory
         get() = ToolCategory.fromString(category)
+
+    val displayName: String
+        get() = name
+
+    val rootStatus: RootStatus
+        get() = when {
+            requiresRoot -> RootStatus.REQUIRES_ROOT
+            else -> RootStatus.entries.firstOrNull { it.name.equals(rootRequired, ignoreCase = true) }
+                ?: RootStatus.NOT_REQUIRED
+        }
+
+    val executionMode: ExecutionMode
+        get() = ExecutionMode.entries.firstOrNull { it.name.equals(executionModeValue, ignoreCase = true) }
+            ?: ExecutionMode.GUI
 }

@@ -6,6 +6,8 @@ import androidx.lifecycle.viewModelScope
 import com.arigato.app.core.execution.ShellExecutor
 import com.arigato.app.core.generator.InputValidator
 import com.arigato.app.core.generator.ValidationResult
+import com.arigato.app.core.output.OutputParser
+import com.arigato.app.core.output.ParsedFindings
 import com.arigato.app.domain.entity.ExecutionStatus
 import com.arigato.app.domain.entity.OutputLine
 import com.arigato.app.domain.entity.Tool
@@ -29,6 +31,7 @@ data class ExecutionUiState(
     val executionId: Long? = null,
     val commandPreview: String = "",
     val isTermuxAvailable: Boolean = false,
+    val parsedFindings: ParsedFindings = ParsedFindings(),
     val error: String? = null
 )
 
@@ -39,7 +42,8 @@ class ExecutionViewModel @Inject constructor(
     private val executeToolUseCase: ExecuteToolUseCase,
     private val inputValidator: InputValidator,
     private val commandBuilder: CommandBuilder,
-    private val shellExecutor: ShellExecutor
+    private val shellExecutor: ShellExecutor,
+    private val outputParser: OutputParser
 ) : ViewModel() {
     private val toolId: String = checkNotNull(savedStateHandle["toolId"])
 
@@ -110,14 +114,22 @@ class ExecutionViewModel @Inject constructor(
                 outputFlow.collect { line ->
                     val current = _uiState.value.outputLines.toMutableList()
                     current.add(line)
-                    val newStatus = if (line is OutputLine.Exit) {
-                        if (line.code == 0) ExecutionStatus.COMPLETED else ExecutionStatus.FAILED
+                    val isExit = line is OutputLine.Exit
+                    val newStatus = if (isExit) {
+                        if ((line as OutputLine.Exit).code == 0) ExecutionStatus.COMPLETED else ExecutionStatus.FAILED
                     } else {
                         ExecutionStatus.RUNNING
                     }
+                    val findings = if (isExit) {
+                        val stdoutLines = current.filterIsInstance<OutputLine.StdOut>().map { it.content }
+                        outputParser.parse(stdoutLines)
+                    } else {
+                        _uiState.value.parsedFindings
+                    }
                     _uiState.value = _uiState.value.copy(
                         outputLines = current,
-                        executionStatus = newStatus
+                        executionStatus = newStatus,
+                        parsedFindings = findings
                     )
                 }
             }.onFailure { e ->
@@ -141,7 +153,8 @@ class ExecutionViewModel @Inject constructor(
         _uiState.value = _uiState.value.copy(
             outputLines = emptyList(),
             executionStatus = null,
-            executionId = null
+            executionId = null,
+            parsedFindings = ParsedFindings()
         )
     }
 

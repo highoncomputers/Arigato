@@ -54,6 +54,7 @@ fun HomeScreen(
     onNavigateToTools: () -> Unit,
     onNavigateToTool: (String) -> Unit,
     onNavigateToHistory: () -> Unit,
+    onNavigateToWorkflow: (String) -> Unit = {},
     viewModel: HomeViewModel = hiltViewModel()
 ) {
     val uiState by viewModel.uiState.collectAsState()
@@ -140,7 +141,10 @@ fun HomeScreen(
                     SectionHeader(title = "Workflows")
                 }
                 items(uiState.featuredWorkflows) { workflow ->
-                    WorkflowCard(workflow = workflow)
+                    WorkflowCard(
+                        workflow = workflow,
+                        onClick = { onNavigateToWorkflow(workflow.id) }
+                    )
                 }
             }
         }
@@ -237,8 +241,9 @@ private fun CompactToolCard(
 }
 
 @Composable
-private fun WorkflowCard(workflow: Workflow) {
+private fun WorkflowCard(workflow: Workflow, onClick: () -> Unit = {}) {
     Card(
+        onClick = onClick,
         modifier = Modifier.fillMaxWidth(),
         colors = CardDefaults.cardColors(
             containerColor = MaterialTheme.colorScheme.surface

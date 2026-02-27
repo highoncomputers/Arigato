@@ -55,6 +55,7 @@ import com.arigato.app.domain.entity.ExecutionStatus
 import com.arigato.app.domain.entity.RootStatus
 import com.arigato.app.ui.components.DynamicForm
 import com.arigato.app.ui.components.OutputViewer
+import com.arigato.app.ui.components.ParsedOutputCard
 import com.arigato.app.ui.components.copyOutputToClipboard
 import com.arigato.app.ui.viewmodel.ExecutionViewModel
 
@@ -183,6 +184,12 @@ fun ExecutionScreen(
                     outputLines = uiState.outputLines,
                     modifier = Modifier.weight(0.55f)
                 )
+                if (!uiState.parsedFindings.isEmpty) {
+                    ParsedOutputCard(
+                        findings = uiState.parsedFindings,
+                        modifier = Modifier.padding(horizontal = 16.dp, vertical = 8.dp)
+                    )
+                }
             }
         }
     }
@@ -327,7 +334,12 @@ private fun TermuxWarningBanner() {
 }
 
 @Composable
-private fun RootWarningBanner() {
+private fun RootWarningBanner(rootStatus: RootStatus = RootStatus.REQUIRES_ROOT) {
+    val message = when (rootStatus) {
+        RootStatus.REQUIRES_ROOT -> "🔒 This tool requires root (superuser) access"
+        RootStatus.OPTIONAL_ROOT -> "⚠ This tool has enhanced capabilities with root access"
+        RootStatus.NOT_REQUIRED -> return
+    }
     Row(
         modifier = Modifier
             .fillMaxWidth()
@@ -339,7 +351,7 @@ private fun RootWarningBanner() {
         verticalAlignment = Alignment.CenterVertically
     ) {
         Text(
-            text = "⚠ This tool requires root (superuser) access",
+            text = message,
             style = MaterialTheme.typography.bodySmall,
             color = MaterialTheme.colorScheme.onTertiaryContainer
         )
