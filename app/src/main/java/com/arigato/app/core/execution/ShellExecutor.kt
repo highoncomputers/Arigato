@@ -33,12 +33,13 @@ class ShellExecutor @Inject constructor(
     }.getOrDefault(false)
 
     fun isToolInstalled(toolName: String): Boolean {
+        val runtimeBins = runtimeManager.getBinPaths().map { "$it/$toolName" }
         val paths = listOf(
             "/data/data/com.termux/files/usr/bin/$toolName",
             "/usr/bin/$toolName",
             "/usr/local/bin/$toolName",
             "/bin/$toolName"
-        )
+        ) + runtimeBins
         return paths.any { java.io.File(it).exists() }
     }
 
@@ -101,12 +102,20 @@ class ShellExecutor @Inject constructor(
     }
 
     private fun wrapCommand(command: String): List<String> {
-        val shell = if (isTermuxInstalled()) {
-            "/data/data/com.termux/files/usr/bin/bash"
-        } else {
-            DEFAULT_SHELL
+        val shell = when {
+            isTermuxInstalled() -> "/data/data/com.termux/files/usr/bin/bash"
+            runtimeShell() != null -> runtimeShell()!!
+            else -> DEFAULT_SHELL
         }
         return listOf(shell, "-c", command)
+    }
+
+    private fun runtimeShell(): String? {
+        val candidates = listOf("native/bin/bash", "native/bin/sh")
+        return candidates
+            .map { java.io.File(runtimeManager.runtimeDirectory, it) }
+            .firstOrNull { it.exists() }
+            ?.absolutePath
     }
 
     private fun buildEnvironment(extra: Map<String, String>): Map<String, String> {

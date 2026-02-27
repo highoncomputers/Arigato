@@ -9,9 +9,15 @@ enum class ParameterType {
     SELECT,
     MULTI_SELECT,
     FLAG,
+    BOOLEAN,
     PORT,
     PORT_RANGE,
     WORDLIST,
     PASSWORD,
-    CIDR
+    CIDR;
+
+    companion object {
+        fun fromString(value: String): ParameterType =
+            entries.firstOrNull { it.name.equals(value, ignoreCase = true) } ?: TEXT
+    }
 }

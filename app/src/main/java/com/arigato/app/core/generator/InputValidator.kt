@@ -29,7 +29,9 @@ class InputValidator @Inject constructor() {
             if (!value.matches(Regex(pattern))) {
                 return ValidationResult(
                     false,
-                    parameter.validation.hint ?: "Invalid format for ${parameter.name}"
+                    parameter.validation.message
+                        ?: parameter.validation.hint
+                        ?: "Invalid format for ${parameter.name}"
                 )
             }
         }
