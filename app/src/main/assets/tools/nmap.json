@@ -1,0 +1,65 @@
+{
+  "id": "nmap",
+  "name": "Nmap",
+  "packageName": "nmap",
+  "description": "Network Mapper - a free and open source utility for network discovery and security auditing. Used to discover hosts and services on a computer network by sending packets and analyzing the responses.",
+  "useCases": [
+    "Host discovery and port scanning",
+    "Service version detection",
+    "OS detection",
+    "Network inventory and auditing",
+    "Security vulnerability scanning"
+  ],
+  "category": "NETWORK_SCANNING",
+  "parameters": [
+    {
+      "name": "target",
+      "type": "IP_ADDRESS",
+      "description": "Target host, IP address, or CIDR network",
+      "isRequired": true,
+      "isPositional": true,
+      "validation": {"hint": "e.g., 192.168.1.1 or 192.168.0.0/24"}
+    },
+    {
+      "name": "port",
+      "flag": "-p",
+      "type": "PORT",
+      "description": "Ports to scan",
+      "isRequired": false,
+      "validation": {"hint": "e.g., 80, 443, or 1-1000"}
+    },
+    {
+      "name": "scanType",
+      "type": "SELECT",
+      "description": "Type of scan to perform",
+      "isRequired": false,
+      "options": ["-sV", "-sS", "-sT", "-sU", "-sA", "-A", "-O"],
+      "defaultValue": "-sV"
+    },
+    {
+      "name": "timing",
+      "flag": "-T",
+      "type": "SELECT",
+      "description": "Timing template (0=paranoid, 5=insane)",
+      "isRequired": false,
+      "options": ["0", "1", "2", "3", "4", "5"],
+      "defaultValue": "3"
+    },
+    {
+      "name": "output",
+      "flag": "-oN",
+      "type": "FILE_PATH",
+      "description": "Output file path",
+      "isRequired": false
+    }
+  ],
+  "commandTemplate": "nmap {scanType} -T{timing} {port_flag} {target}",
+  "examples": [
+    {"command": "nmap -sV -p 1-1000 192.168.1.1", "description": "Service version scan on top 1000 ports"},
+    {"command": "nmap -A -T4 192.168.1.0/24", "description": "Aggressive scan on entire subnet"},
+    {"command": "nmap -sS -O 10.0.0.1", "description": "Stealth SYN scan with OS detection"},
+    {"command": "nmap --script vuln 192.168.1.1", "description": "Vulnerability scan using NSE scripts"}
+  ],
+  "requiresRoot": true,
+  "tags": ["network", "scanning", "port-scan", "recon"]
+}

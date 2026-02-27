@@ -1,0 +1,77 @@
+{
+  "id": "gobuster",
+  "name": "Gobuster",
+  "packageName": "gobuster",
+  "description": "Directory/file, DNS and vhost busting tool written in Go. Fast and flexible tool for directory enumeration, DNS subdomain brute-forcing, and virtual host discovery.",
+  "useCases": [
+    "Web directory and file enumeration",
+    "DNS subdomain discovery",
+    "Virtual host discovery",
+    "Fuzzing web endpoints"
+  ],
+  "category": "WEB_SECURITY",
+  "parameters": [
+    {
+      "name": "mode",
+      "type": "SELECT",
+      "description": "Gobuster mode",
+      "isRequired": true,
+      "isPositional": true,
+      "options": ["dir", "dns", "vhost", "s3", "fuzz"]
+    },
+    {
+      "name": "url",
+      "flag": "-u",
+      "type": "URL",
+      "description": "Target URL",
+      "isRequired": true,
+      "validation": {"hint": "e.g., https://example.com"}
+    },
+    {
+      "name": "wordlist",
+      "flag": "-w",
+      "type": "WORDLIST",
+      "description": "Path to wordlist",
+      "isRequired": true,
+      "validation": {"hint": "/path/to/wordlist.txt"}
+    },
+    {
+      "name": "threads",
+      "flag": "-t",
+      "type": "NUMBER",
+      "description": "Number of concurrent threads",
+      "isRequired": false,
+      "defaultValue": "10",
+      "validation": {"minValue": 1, "maxValue": 100}
+    },
+    {
+      "name": "extensions",
+      "flag": "-x",
+      "type": "TEXT",
+      "description": "File extensions to search (e.g., php,html,js)",
+      "isRequired": false
+    },
+    {
+      "name": "output",
+      "flag": "-o",
+      "type": "FILE_PATH",
+      "description": "Output file path",
+      "isRequired": false
+    },
+    {
+      "name": "statusCodes",
+      "flag": "-s",
+      "type": "TEXT",
+      "description": "Status codes to include (default: 200,204,301,302,307,401,403)",
+      "isRequired": false
+    }
+  ],
+  "commandTemplate": "gobuster {mode} -u {url} -w {wordlist} -t {threads}",
+  "examples": [
+    {"command": "gobuster dir -u https://example.com -w /usr/share/wordlists/dirb/common.txt", "description": "Directory enumeration"},
+    {"command": "gobuster dns -d example.com -w subdomains.txt", "description": "DNS subdomain enumeration"},
+    {"command": "gobuster dir -u https://example.com -w wordlist.txt -x php,html -t 20", "description": "Search for PHP and HTML files"}
+  ],
+  "requiresRoot": false,
+  "tags": ["web", "directory-enum", "dns", "fuzzing"]
+}

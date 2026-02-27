@@ -1,0 +1,54 @@
+{
+  "id": "masscan",
+  "name": "Masscan",
+  "packageName": "masscan",
+  "description": "Internet-scale port scanner capable of scanning the entire Internet in under 6 minutes, transmitting 10 million packets per second.",
+  "useCases": [
+    "Large-scale network port scanning",
+    "Fast network discovery",
+    "Internet-wide research",
+    "Network inventory"
+  ],
+  "category": "NETWORK_SCANNING",
+  "parameters": [
+    {
+      "name": "target",
+      "type": "CIDR",
+      "description": "Target IP range in CIDR notation",
+      "isRequired": true,
+      "isPositional": true,
+      "validation": {"hint": "e.g., 192.168.1.0/24"}
+    },
+    {
+      "name": "ports",
+      "flag": "-p",
+      "type": "PORT",
+      "description": "Ports to scan",
+      "isRequired": true,
+      "validation": {"hint": "e.g., 80,443 or 1-1000"}
+    },
+    {
+      "name": "rate",
+      "flag": "--rate",
+      "type": "NUMBER",
+      "description": "Packets per second",
+      "isRequired": false,
+      "defaultValue": "1000",
+      "validation": {"minValue": 100, "maxValue": 1000000}
+    },
+    {
+      "name": "output",
+      "flag": "-oX",
+      "type": "FILE_PATH",
+      "description": "Output XML file",
+      "isRequired": false
+    }
+  ],
+  "commandTemplate": "masscan {target} -p {ports} --rate={rate}",
+  "examples": [
+    {"command": "masscan 192.168.1.0/24 -p 80,443 --rate=1000", "description": "Scan subnet for web ports"},
+    {"command": "masscan 10.0.0.0/8 -p 1-65535 --rate=10000", "description": "Full port scan of /8 network"}
+  ],
+  "requiresRoot": true,
+  "tags": ["network", "scanning", "fast", "port-scan"]
+}

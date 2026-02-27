@@ -1,0 +1,54 @@
+{
+  "id": "frida",
+  "name": "Frida",
+  "packageName": "frida",
+  "description": "Dynamic instrumentation toolkit for developers, reverse-engineers, and security researchers. Allows injection of JavaScript or native scripts into processes on Windows, macOS, GNU/Linux, iOS, Android, and QNX.",
+  "useCases": [
+    "Dynamic application analysis",
+    "API hooking and monitoring",
+    "SSL pinning bypass",
+    "Runtime behavior modification",
+    "Mobile application security testing"
+  ],
+  "category": "MOBILE_SECURITY",
+  "parameters": [
+    {
+      "name": "target",
+      "flag": "-n",
+      "type": "TEXT",
+      "description": "Target process name or PID",
+      "isRequired": false
+    },
+    {
+      "name": "package",
+      "flag": "-U",
+      "type": "FLAG",
+      "description": "Connect to USB device",
+      "isRequired": false,
+      "defaultValue": "true"
+    },
+    {
+      "name": "script",
+      "flag": "-l",
+      "type": "FILE_PATH",
+      "description": "JavaScript script to load",
+      "isRequired": false
+    },
+    {
+      "name": "spawn",
+      "flag": "-f",
+      "type": "TEXT",
+      "description": "Spawn process with package name",
+      "isRequired": false,
+      "validation": {"hint": "e.g., com.example.app"}
+    }
+  ],
+  "commandTemplate": "frida -U -n {target}",
+  "examples": [
+    {"command": "frida -U -n com.example.app", "description": "Attach to Android app"},
+    {"command": "frida -U -f com.example.app -l script.js", "description": "Spawn app with script"},
+    {"command": "frida-ps -Ua", "description": "List running Android processes"}
+  ],
+  "requiresRoot": true,
+  "tags": ["mobile", "android", "dynamic-analysis", "hooking", "instrumentation"]
+}

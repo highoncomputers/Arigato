@@ -1,0 +1,61 @@
+{
+  "id": "apktool",
+  "name": "APKTool",
+  "packageName": "apktool",
+  "description": "Tool for reverse engineering Android apk files. Can decode resources to nearly original form and rebuild them after making some modifications.",
+  "useCases": [
+    "APK decompilation and analysis",
+    "Smali code inspection",
+    "Resource extraction",
+    "APK repackaging and modification"
+  ],
+  "category": "MOBILE_SECURITY",
+  "parameters": [
+    {
+      "name": "command",
+      "type": "SELECT",
+      "description": "APKTool command",
+      "isRequired": true,
+      "isPositional": true,
+      "options": ["d", "b", "if", "publicize-resources"],
+      "defaultValue": "d"
+    },
+    {
+      "name": "apkFile",
+      "type": "FILE_PATH",
+      "description": "Input APK file path",
+      "isRequired": true,
+      "isPositional": true,
+      "validation": {"hint": "/path/to/app.apk"}
+    },
+    {
+      "name": "output",
+      "flag": "-o",
+      "type": "FILE_PATH",
+      "description": "Output directory",
+      "isRequired": false
+    },
+    {
+      "name": "noSrc",
+      "flag": "-s",
+      "type": "FLAG",
+      "description": "Do not decode sources",
+      "isRequired": false
+    },
+    {
+      "name": "noRes",
+      "flag": "-r",
+      "type": "FLAG",
+      "description": "Do not decode resources",
+      "isRequired": false
+    }
+  ],
+  "commandTemplate": "apktool {command} {apkFile}",
+  "examples": [
+    {"command": "apktool d app.apk", "description": "Decompile APK"},
+    {"command": "apktool d app.apk -o output_dir", "description": "Decompile to specific directory"},
+    {"command": "apktool b output_dir -o repackaged.apk", "description": "Rebuild APK from decompiled sources"}
+  ],
+  "requiresRoot": false,
+  "tags": ["mobile", "android", "apk", "reverse-engineering", "smali"]
+}

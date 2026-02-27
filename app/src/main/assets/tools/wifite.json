@@ -1,0 +1,51 @@
+{
+  "id": "wifite",
+  "name": "Wifite",
+  "packageName": "wifite",
+  "description": "Automated wireless network auditor and WPA/WEP cracker. Designed for Linux and supports attacking multiple WEP, WPA, and WPS encrypted networks in a row.",
+  "useCases": [
+    "Automated WiFi security auditing",
+    "WPA/WEP/WPS cracking",
+    "Multiple target attack automation"
+  ],
+  "category": "WIRELESS",
+  "parameters": [
+    {
+      "name": "interface",
+      "flag": "-i",
+      "type": "TEXT",
+      "description": "Wireless interface to use",
+      "isRequired": false,
+      "validation": {"hint": "e.g., wlan0"}
+    },
+    {
+      "name": "wordlist",
+      "flag": "-dict",
+      "type": "WORDLIST",
+      "description": "Wordlist for WPA cracking",
+      "isRequired": false
+    },
+    {
+      "name": "wpa",
+      "flag": "--wpa",
+      "type": "FLAG",
+      "description": "Attack only WPA networks",
+      "isRequired": false
+    },
+    {
+      "name": "wps",
+      "flag": "--wps",
+      "type": "FLAG",
+      "description": "Attack only WPS networks",
+      "isRequired": false
+    }
+  ],
+  "commandTemplate": "wifite",
+  "examples": [
+    {"command": "wifite", "description": "Start automated WiFi audit"},
+    {"command": "wifite --wpa -dict wordlist.txt", "description": "WPA attack with custom wordlist"},
+    {"command": "wifite -i wlan0 --wps", "description": "WPS attack on specific interface"}
+  ],
+  "requiresRoot": true,
+  "tags": ["wireless", "wifi", "wpa", "automated"]
+}

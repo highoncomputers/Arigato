@@ -1,0 +1,70 @@
+{
+  "id": "nikto",
+  "name": "Nikto",
+  "packageName": "nikto",
+  "description": "Web server scanner that performs comprehensive tests against web servers for multiple items including dangerous files/programs, outdated server software, and version-specific problems.",
+  "useCases": [
+    "Web server vulnerability scanning",
+    "Outdated software detection",
+    "Common web vulnerabilities discovery",
+    "SSL/TLS configuration checks",
+    "Default credentials testing"
+  ],
+  "category": "WEB_SECURITY",
+  "parameters": [
+    {
+      "name": "host",
+      "flag": "-h",
+      "type": "URL",
+      "description": "Target host or URL",
+      "isRequired": true,
+      "validation": {"hint": "e.g., https://example.com or 192.168.1.1"}
+    },
+    {
+      "name": "port",
+      "flag": "-p",
+      "type": "PORT",
+      "description": "Port to scan (default 80)",
+      "isRequired": false,
+      "defaultValue": "80"
+    },
+    {
+      "name": "ssl",
+      "flag": "-ssl",
+      "type": "FLAG",
+      "description": "Force SSL mode",
+      "isRequired": false
+    },
+    {
+      "name": "output",
+      "flag": "-o",
+      "type": "FILE_PATH",
+      "description": "Output file",
+      "isRequired": false
+    },
+    {
+      "name": "format",
+      "flag": "-Format",
+      "type": "SELECT",
+      "description": "Output format",
+      "isRequired": false,
+      "options": ["txt", "csv", "xml", "htm"],
+      "defaultValue": "txt"
+    },
+    {
+      "name": "tuning",
+      "flag": "-Tuning",
+      "type": "TEXT",
+      "description": "Scan tuning (0-9,x - check nikto docs)",
+      "isRequired": false
+    }
+  ],
+  "commandTemplate": "nikto -h {host} -p {port}",
+  "examples": [
+    {"command": "nikto -h https://example.com", "description": "Basic web server scan"},
+    {"command": "nikto -h 192.168.1.1 -p 443 -ssl", "description": "HTTPS scan on custom port"},
+    {"command": "nikto -h https://example.com -o results.txt -Format txt", "description": "Save results to file"}
+  ],
+  "requiresRoot": false,
+  "tags": ["web", "scanner", "vulnerability", "http"]
+}

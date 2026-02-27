@@ -1,0 +1,85 @@
+{
+  "id": "sqlmap",
+  "name": "SQLMap",
+  "packageName": "sqlmap",
+  "description": "Automatic SQL injection and database takeover tool. SQLMap is an open source penetration testing tool that automates the process of detecting and exploiting SQL injection flaws.",
+  "useCases": [
+    "SQL injection vulnerability detection",
+    "Database fingerprinting",
+    "Data extraction from vulnerable databases",
+    "Automated exploitation of SQL injection flaws"
+  ],
+  "category": "WEB_SECURITY",
+  "parameters": [
+    {
+      "name": "url",
+      "flag": "-u",
+      "type": "URL",
+      "description": "Target URL with SQL injection parameter",
+      "isRequired": true,
+      "validation": {"hint": "e.g., https://example.com/page?id=1"}
+    },
+    {
+      "name": "data",
+      "flag": "--data",
+      "type": "TEXT",
+      "description": "POST data string",
+      "isRequired": false
+    },
+    {
+      "name": "dbs",
+      "flag": "--dbs",
+      "type": "FLAG",
+      "description": "Enumerate DBMS databases",
+      "isRequired": false
+    },
+    {
+      "name": "tables",
+      "flag": "--tables",
+      "type": "FLAG",
+      "description": "Enumerate DBMS database tables",
+      "isRequired": false
+    },
+    {
+      "name": "dump",
+      "flag": "--dump",
+      "type": "FLAG",
+      "description": "Dump DBMS database table entries",
+      "isRequired": false
+    },
+    {
+      "name": "batch",
+      "flag": "--batch",
+      "type": "FLAG",
+      "description": "Never ask for user input, use default behaviour",
+      "isRequired": false,
+      "defaultValue": "true"
+    },
+    {
+      "name": "level",
+      "flag": "--level",
+      "type": "SELECT",
+      "description": "Level of tests to perform (1-5)",
+      "isRequired": false,
+      "options": ["1", "2", "3", "4", "5"],
+      "defaultValue": "1"
+    },
+    {
+      "name": "risk",
+      "flag": "--risk",
+      "type": "SELECT",
+      "description": "Risk of tests to perform (1-3)",
+      "isRequired": false,
+      "options": ["1", "2", "3"],
+      "defaultValue": "1"
+    }
+  ],
+  "commandTemplate": "sqlmap -u {url} --batch",
+  "examples": [
+    {"command": "sqlmap -u 'https://example.com/page?id=1' --dbs --batch", "description": "Enumerate databases"},
+    {"command": "sqlmap -u 'https://example.com/page?id=1' --tables -D target_db --batch", "description": "List tables in database"},
+    {"command": "sqlmap -u 'https://example.com/login' --data='user=test&pass=test' --dump --batch", "description": "Dump from POST endpoint"}
+  ],
+  "requiresRoot": false,
+  "tags": ["web", "sql-injection", "database", "automation"]
+}

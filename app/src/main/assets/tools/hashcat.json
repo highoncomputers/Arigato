@@ -1,0 +1,69 @@
+{
+  "id": "hashcat",
+  "name": "Hashcat",
+  "packageName": "hashcat",
+  "description": "World's fastest and most advanced password recovery utility, supporting five unique modes of attack for over 300 highly-optimized hashing algorithms.",
+  "useCases": [
+    "Password hash cracking",
+    "Dictionary and brute-force attacks",
+    "Rule-based password recovery",
+    "GPU-accelerated hash cracking"
+  ],
+  "category": "PASSWORD_CRACKING",
+  "parameters": [
+    {
+      "name": "attackMode",
+      "flag": "-a",
+      "type": "SELECT",
+      "description": "Attack mode",
+      "isRequired": true,
+      "options": ["0", "1", "3", "6", "7"],
+      "defaultValue": "0"
+    },
+    {
+      "name": "hashType",
+      "flag": "-m",
+      "type": "SELECT",
+      "description": "Hash type",
+      "isRequired": true,
+      "options": ["0", "100", "900", "1000", "1400", "1700", "1800", "3200", "5500", "5600", "13100"],
+      "defaultValue": "0"
+    },
+    {
+      "name": "hashFile",
+      "type": "FILE_PATH",
+      "description": "File containing hashes to crack",
+      "isRequired": true,
+      "isPositional": true
+    },
+    {
+      "name": "wordlist",
+      "type": "WORDLIST",
+      "description": "Wordlist file (for dictionary attacks)",
+      "isRequired": false,
+      "isPositional": true
+    },
+    {
+      "name": "rules",
+      "flag": "-r",
+      "type": "FILE_PATH",
+      "description": "Rules file",
+      "isRequired": false
+    },
+    {
+      "name": "output",
+      "flag": "-o",
+      "type": "FILE_PATH",
+      "description": "Output file for cracked hashes",
+      "isRequired": false
+    }
+  ],
+  "commandTemplate": "hashcat -a {attackMode} -m {hashType} {hashFile} {wordlist}",
+  "examples": [
+    {"command": "hashcat -a 0 -m 0 hashes.txt wordlist.txt", "description": "Dictionary attack on MD5 hashes"},
+    {"command": "hashcat -a 3 -m 0 hash.txt ?a?a?a?a?a?a", "description": "Brute-force 6-char passwords"},
+    {"command": "hashcat -a 0 -m 1800 hashes.txt rockyou.txt -r rules/best64.rule", "description": "SHA-512 with rules"}
+  ],
+  "requiresRoot": false,
+  "tags": ["password", "hash", "cracking", "gpu"]
+}

@@ -1,0 +1,70 @@
+{
+  "id": "hydra",
+  "name": "Hydra",
+  "packageName": "hydra",
+  "description": "THC Hydra - A very fast network logon cracker that supports numerous protocols. Used to brute-force or dictionary attack login credentials for various network services.",
+  "useCases": [
+    "Brute-force SSH, FTP, HTTP logins",
+    "Password auditing for network services",
+    "Dictionary attacks against authentication services",
+    "Testing password strength policies"
+  ],
+  "category": "PASSWORD_CRACKING",
+  "parameters": [
+    {
+      "name": "target",
+      "flag": "-l",
+      "type": "IP_ADDRESS",
+      "description": "Target host",
+      "isRequired": true,
+      "validation": {"hint": "e.g., 192.168.1.1"}
+    },
+    {
+      "name": "username",
+      "flag": "-l",
+      "type": "TEXT",
+      "description": "Single username or -L for username list",
+      "isRequired": true
+    },
+    {
+      "name": "passwordList",
+      "flag": "-P",
+      "type": "WORDLIST",
+      "description": "Password list file",
+      "isRequired": true,
+      "validation": {"hint": "/path/to/wordlist.txt"}
+    },
+    {
+      "name": "service",
+      "type": "SELECT",
+      "description": "Service to attack",
+      "isRequired": true,
+      "isPositional": true,
+      "options": ["ssh", "ftp", "http-post-form", "https-post-form", "smb", "telnet", "mysql", "rdp", "vnc", "imap", "pop3", "smtp"]
+    },
+    {
+      "name": "threads",
+      "flag": "-t",
+      "type": "NUMBER",
+      "description": "Number of parallel connections",
+      "isRequired": false,
+      "defaultValue": "4",
+      "validation": {"minValue": 1, "maxValue": 64}
+    },
+    {
+      "name": "verbose",
+      "flag": "-V",
+      "type": "FLAG",
+      "description": "Verbose output",
+      "isRequired": false
+    }
+  ],
+  "commandTemplate": "hydra -l {username} -P {passwordList} {target} {service} -t {threads}",
+  "examples": [
+    {"command": "hydra -l admin -P wordlist.txt 192.168.1.1 ssh", "description": "SSH brute force"},
+    {"command": "hydra -l admin -P wordlist.txt 192.168.1.1 ftp -t 8 -V", "description": "FTP brute force with 8 threads"},
+    {"command": "hydra -l admin -P wordlist.txt 192.168.1.100 http-post-form '/login:user=^USER^&pass=^PASS^:Invalid'", "description": "HTTP form brute force"}
+  ],
+  "requiresRoot": false,
+  "tags": ["password", "brute-force", "dictionary-attack", "network"]
+}
