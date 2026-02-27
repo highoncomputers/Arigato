@@ -98,6 +98,9 @@ dependencies {
     ksp("com.google.dagger:hilt-compiler:2.48")
     implementation("androidx.hilt:hilt-navigation-compose:1.1.0")
 
+    // SQLite JDBC with ARM64 support - must be before Room
+    implementation("org.xerial:sqlite-jdbc:3.42.0.0")
+
     implementation("androidx.room:room-runtime:2.6.1")
     implementation("androidx.room:room-ktx:2.6.1")
     ksp("androidx.room:room-compiler:2.6.1")
