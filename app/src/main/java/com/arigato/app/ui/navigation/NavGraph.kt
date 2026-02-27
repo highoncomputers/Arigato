@@ -11,6 +11,7 @@ import com.arigato.app.ui.screens.ExecutionScreen
 import com.arigato.app.ui.screens.HistoryScreen
 import com.arigato.app.ui.screens.HomeScreen
 import com.arigato.app.ui.screens.SettingsScreen
+import com.arigato.app.ui.screens.SplashScreen
 import com.arigato.app.ui.screens.ToolDetailScreen
 import com.arigato.app.ui.screens.ToolListScreen
 
@@ -37,9 +38,17 @@ fun ArigatoNavGraph(
 ) {
     NavHost(
         navController = navController,
-        startDestination = Screen.Home.route,
+        startDestination = Screen.Splash.route,
         modifier = modifier
     ) {
+        composable(Screen.Splash.route) {
+            SplashScreen(onReady = {
+                navController.navigate(Screen.Home.route) {
+                    popUpTo(Screen.Splash.route) { inclusive = true }
+                }
+            })
+        }
+
         composable(Screen.Home.route) {
             HomeScreen(
                 onNavigateToTools = {

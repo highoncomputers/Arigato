@@ -1,5 +1,6 @@
 package com.arigato.app.ui.screens
 
+import android.content.Intent
 import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
@@ -32,7 +33,6 @@ import androidx.compose.material3.HorizontalDivider
 import androidx.compose.material3.Icon
 import androidx.compose.material3.IconButton
 import androidx.compose.material3.MaterialTheme
-import androidx.compose.material3.OutlinedButton
 import androidx.compose.material3.Scaffold
 import androidx.compose.material3.Text
 import androidx.compose.material3.TopAppBar
@@ -48,8 +48,11 @@ import androidx.compose.ui.text.font.FontFamily
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.unit.dp
+import androidx.core.net.toUri
 import androidx.hilt.navigation.compose.hiltViewModel
+import com.arigato.app.domain.entity.ExecutionMode
 import com.arigato.app.domain.entity.ExecutionStatus
+import com.arigato.app.domain.entity.RootStatus
 import com.arigato.app.ui.components.DynamicForm
 import com.arigato.app.ui.components.OutputViewer
 import com.arigato.app.ui.components.copyOutputToClipboard
@@ -70,7 +73,7 @@ fun ExecutionScreen(
                 title = {
                     Row(verticalAlignment = Alignment.CenterVertically) {
                         Text(
-                            text = uiState.tool?.name ?: "Execute",
+                            text = uiState.tool?.displayName ?: "Execute",
                             maxLines = 1,
                             overflow = TextOverflow.Ellipsis
                         )
@@ -116,6 +119,12 @@ fun ExecutionScreen(
         }
 
         val tool = uiState.tool ?: return@Scaffold
+        val launchUrl = tool.website?.takeIf { it.isNotBlank() }
+        val launchExternal = {
+            launchUrl?.let { url ->
+                context.startActivity(Intent(Intent.ACTION_VIEW, url.toUri()))
+            }
+        }
 
         Column(
             modifier = Modifier
@@ -129,12 +138,14 @@ fun ExecutionScreen(
                     .padding(16.dp),
                 verticalArrangement = Arrangement.spacedBy(12.dp)
             ) {
-                if (!uiState.isTermuxAvailable) {
+                val isTerminalTool = tool.executionMode == ExecutionMode.TERMINAL
+
+                if (isTerminalTool && !uiState.isTermuxAvailable) {
                     TermuxWarningBanner()
                 }
 
-                if (tool.requiresRoot) {
-                    RootWarningBanner()
+                if (tool.rootStatus != RootStatus.NOT_REQUIRED) {
+                    RootWarningBanner(tool.rootStatus)
                 }
 
                 DynamicForm(
@@ -149,11 +160,14 @@ fun ExecutionScreen(
                 }
 
                 ExecutionControls(
+                    executionMode = tool.executionMode,
                     isRunning = uiState.executionStatus == ExecutionStatus.RUNNING,
-                    isTermuxAvailable = uiState.isTermuxAvailable,
+                    showTerminalLaunch = isTerminalTool && uiState.isTermuxAvailable,
+                    canLaunchExternal = launchUrl != null,
                     onExecute = viewModel::execute,
                     onStop = viewModel::terminate,
-                    onLaunchTermux = viewModel::launchInTermux
+                    onLaunchTermux = viewModel::launchInTermux,
+                    onLaunchExternal = launchExternal
                 )
             }
 
@@ -223,47 +237,62 @@ private fun CommandPreviewCard(command: String) {
 
 @Composable
 private fun ExecutionControls(
+    executionMode: ExecutionMode,
     isRunning: Boolean,
-    isTermuxAvailable: Boolean,
+    showTerminalLaunch: Boolean,
+    canLaunchExternal: Boolean,
     onExecute: () -> Unit,
     onStop: () -> Unit,
-    onLaunchTermux: () -> Unit
+    onLaunchTermux: () -> Unit,
+    onLaunchExternal: () -> Unit
 ) {
     Row(
         modifier = Modifier.fillMaxWidth(),
         horizontalArrangement = Arrangement.spacedBy(8.dp)
     ) {
-        if (isRunning) {
+        if (executionMode == ExecutionMode.LAUNCH) {
             Button(
-                onClick = onStop,
+                onClick = onLaunchExternal,
                 modifier = Modifier.weight(1f),
-                colors = ButtonDefaults.buttonColors(
-                    containerColor = MaterialTheme.colorScheme.error
-                )
-            ) {
-                Icon(Icons.Default.Stop, null, modifier = Modifier.size(18.dp))
-                Spacer(modifier = Modifier.width(6.dp))
-                Text("Stop")
-            }
-        } else {
-            Button(
-                onClick = onExecute,
-                modifier = Modifier.weight(1f)
-            ) {
-                Icon(Icons.Default.PlayArrow, null, modifier = Modifier.size(18.dp))
-                Spacer(modifier = Modifier.width(6.dp))
-                Text("Execute")
-            }
-        }
-
-        if (isTermuxAvailable) {
-            FilledTonalButton(
-                onClick = onLaunchTermux,
-                modifier = Modifier.weight(1f)
+                enabled = canLaunchExternal
             ) {
                 Icon(Icons.Default.OpenInNew, null, modifier = Modifier.size(18.dp))
                 Spacer(modifier = Modifier.width(6.dp))
-                Text("In Termux")
+                Text("Launch")
+            }
+        } else {
+            if (isRunning) {
+                Button(
+                    onClick = onStop,
+                    modifier = Modifier.weight(1f),
+                    colors = ButtonDefaults.buttonColors(
+                        containerColor = MaterialTheme.colorScheme.error
+                    )
+                ) {
+                    Icon(Icons.Default.Stop, null, modifier = Modifier.size(18.dp))
+                    Spacer(modifier = Modifier.width(6.dp))
+                    Text("Stop")
+                }
+            } else {
+                Button(
+                    onClick = onExecute,
+                    modifier = Modifier.weight(1f)
+                ) {
+                    Icon(Icons.Default.PlayArrow, null, modifier = Modifier.size(18.dp))
+                    Spacer(modifier = Modifier.width(6.dp))
+                    Text("Execute")
+                }
+            }
+
+            if (showTerminalLaunch) {
+                FilledTonalButton(
+                    onClick = onLaunchTermux,
+                    modifier = Modifier.weight(1f)
+                ) {
+                    Icon(Icons.Default.OpenInNew, null, modifier = Modifier.size(18.dp))
+                    Spacer(modifier = Modifier.width(6.dp))
+                    Text("Terminal")
+                }
             }
         }
     }
@@ -283,13 +312,13 @@ private fun TermuxWarningBanner() {
     ) {
         Column(modifier = Modifier.weight(1f)) {
             Text(
-                text = "Termux Not Found",
+                text = "Terminal Runtime Needed",
                 style = MaterialTheme.typography.labelLarge,
                 fontWeight = FontWeight.SemiBold,
                 color = MaterialTheme.colorScheme.onErrorContainer
             )
             Text(
-                text = "Install Termux from F-Droid for tool execution",
+                text = "Install Termux to run interactive terminal tools",
                 style = MaterialTheme.typography.bodySmall,
                 color = MaterialTheme.colorScheme.onErrorContainer.copy(alpha = 0.8f)
             )

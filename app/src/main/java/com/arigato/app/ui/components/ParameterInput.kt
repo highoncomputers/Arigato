@@ -46,7 +46,7 @@ fun ParameterInputField(
 ) {
     when (parameter.parameterType) {
         ParameterType.SELECT -> SelectInputField(parameter, value, onValueChange, validationResult, modifier)
-        ParameterType.FLAG -> FlagInputField(parameter, value, onValueChange, modifier)
+        ParameterType.FLAG, ParameterType.BOOLEAN -> FlagInputField(parameter, value, onValueChange, modifier)
         ParameterType.PASSWORD -> PasswordInputField(parameter, value, onValueChange, validationResult, modifier)
         ParameterType.FILE_PATH, ParameterType.WORDLIST -> FileInputField(parameter, value, onValueChange, validationResult, modifier)
         ParameterType.NUMBER, ParameterType.PORT -> NumberInputField(parameter, value, onValueChange, validationResult, modifier)
@@ -74,12 +74,12 @@ private fun TextInputField(
             label = {
                 Text(
                     buildString {
-                        append(parameter.name)
+                        append(parameter.label ?: parameter.name)
                         if (parameter.isRequired) append(" *")
                     }
                 )
             },
-            placeholder = parameter.validation?.hint?.let { { Text(it) } },
+            placeholder = (parameter.hint ?: parameter.validation?.hint)?.let { { Text(it) } },
             supportingText = {
                 val msg = validationResult?.errorMessage ?: parameter.description
                 if (msg != null) {
@@ -122,12 +122,12 @@ private fun NumberInputField(
         label = {
             Text(
                 buildString {
-                    append(parameter.name)
+                    append(parameter.label ?: parameter.name)
                     if (parameter.isRequired) append(" *")
                 }
             )
         },
-        placeholder = parameter.validation?.hint?.let { { Text(it) } },
+        placeholder = (parameter.hint ?: parameter.validation?.hint)?.let { { Text(it) } },
         supportingText = {
             val msg = validationResult?.errorMessage ?: parameter.description
             if (msg != null) {
@@ -193,7 +193,8 @@ private fun SelectInputField(
 ) {
     val options = parameter.options ?: return
     var expanded by remember { mutableStateOf(false) }
-    val selectedOption = value.ifBlank { parameter.defaultValue ?: options.firstOrNull() ?: "" }
+    val selectedValue = value.ifBlank { parameter.defaultValue ?: options.firstOrNull()?.value.orEmpty() }
+    val selectedLabel = options.firstOrNull { it.value == selectedValue }?.label ?: selectedValue
 
     ExposedDropdownMenuBox(
         expanded = expanded,
@@ -201,10 +202,10 @@ private fun SelectInputField(
         modifier = modifier
     ) {
         OutlinedTextField(
-            value = selectedOption,
+            value = selectedLabel,
             onValueChange = {},
             readOnly = true,
-            label = { Text(parameter.name) },
+            label = { Text(parameter.label ?: parameter.name) },
             trailingIcon = { ExposedDropdownMenuDefaults.TrailingIcon(expanded = expanded) },
             modifier = Modifier.fillMaxWidth().menuAnchor()
         )
@@ -214,9 +215,9 @@ private fun SelectInputField(
         ) {
             options.forEach { option ->
                 DropdownMenuItem(
-                    text = { Text(option) },
+                    text = { Text(option.label) },
                     onClick = {
-                        onValueChange(option)
+                        onValueChange(option.value)
                         expanded = false
                     }
                 )
@@ -243,7 +244,7 @@ private fun FlagInputField(
         Spacer(modifier = Modifier.width(8.dp))
         Column {
             Text(
-                text = parameter.name,
+                text = parameter.label ?: parameter.name,
                 style = MaterialTheme.typography.bodyMedium
             )
             parameter.description?.let {
@@ -271,12 +272,12 @@ private fun FileInputField(
         label = {
             Text(
                 buildString {
-                    append(parameter.name)
+                    append(parameter.label ?: parameter.name)
                     if (parameter.isRequired) append(" *")
                 }
             )
         },
-        placeholder = { Text("/path/to/file") },
+        placeholder = { Text(parameter.hint ?: "/path/to/file") },
         trailingIcon = {
             Icon(Icons.Default.FolderOpen, contentDescription = "Browse file")
         },

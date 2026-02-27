@@ -11,7 +11,7 @@ android {
     compileSdk = 34
 
     defaultConfig {
-        applicationId = "com.arigato.app"
+        applicationId = "com.arigato"
         minSdk = 24
         targetSdk = 34
         versionCode = 1
@@ -20,6 +20,9 @@ android {
         testInstrumentationRunner = "androidx.test.runner.AndroidJUnitRunner"
         vectorDrawables {
             useSupportLibrary = true
+        }
+        ndk {
+            abiFilters += listOf("arm64-v8a", "armeabi-v7a", "x86_64")
         }
     }
 
@@ -65,6 +68,9 @@ android {
         resources {
             excludes += "/META-INF/{AL2.0,LGPL2.1}"
         }
+        jniLibs {
+            useLegacyPackaging = true
+        }
     }
 }
 
@@ -100,6 +106,11 @@ dependencies {
 
     implementation("org.jetbrains.kotlinx:kotlinx-coroutines-android:1.7.3")
     implementation("org.jetbrains.kotlinx:kotlinx-serialization-json:1.6.2")
+
+    implementation("com.termux:terminal-emulator:0.118.0")
+    implementation("com.termux:terminal-view:0.118.0")
+    implementation("io.noties.markwon:core:4.6.2")
+    implementation("androidx.security:security-crypto:1.1.0-alpha06")
 
     implementation("com.google.android.material:material:1.11.0")
 

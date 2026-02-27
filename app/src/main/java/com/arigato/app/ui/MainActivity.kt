@@ -70,6 +70,7 @@ private fun ArigatoBottomNavigation(navController: NavController) {
     val currentRoute = navBackStackEntry?.destination?.route
 
     val hideOnRoutes = listOf(
+        Screen.Splash.route,
         Screen.ToolDetail.route,
         Screen.Execution.route,
         "tool/{toolId}",

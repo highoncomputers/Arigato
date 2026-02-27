@@ -16,22 +16,80 @@ class CommandBuilder @Inject constructor() {
     }
 
     private fun buildFromTemplate(template: String, parameters: List<Parameter>, params: Map<String, String>): String {
-        var command = template
+        var command = replaceFlagPlaceholders(template, parameters, params)
+
         parameters.forEach { param ->
-            val value = params[param.name]
-            if (value != null && value.isNotBlank()) {
+            val value = params[param.name] ?: param.defaultValue
+            if (!value.isNullOrBlank()) {
                 val safeValue = sanitize(value)
-                if (param.flag != null) {
-                    command = command.replace("{${param.name}}", safeValue)
-                } else {
-                    command = command.replace("{${param.name}}", safeValue)
-                }
+                command = command.replace("{${param.name}}", safeValue)
             } else {
                 command = command.replace("${param.flag} {${param.name}}", "")
                 command = command.replace("{${param.name}}", "")
             }
         }
+        command = command.replace(Regex("\\{[^}]+}"), "")
         return command.trim().replace(Regex("\\s+"), " ")
+    }
+
+    private fun replaceFlagPlaceholders(
+        template: String,
+        parameters: List<Parameter>,
+        params: Map<String, String>
+    ): String {
+        val result = StringBuilder()
+        var index = 0
+
+        while (index < template.length) {
+            val start = template.indexOf("{flag:", index)
+            if (start == -1) {
+                result.append(template.substring(index))
+                break
+            }
+            result.append(template.substring(index, start))
+
+            var cursor = start + 6
+            var braceDepth = 1
+            while (cursor < template.length && braceDepth > 0) {
+                when (template[cursor]) {
+                    '{' -> braceDepth++
+                    '}' -> braceDepth--
+                }
+                cursor++
+            }
+
+            if (braceDepth != 0) {
+                result.append(template.substring(start))
+                break
+            }
+
+            val token = template.substring(start + 1, cursor - 1)
+            val parts = token.split(":", limit = 3)
+            val name = parts.getOrNull(1)
+            val customTemplate = parts.getOrNull(2)
+
+            val param = parameters.firstOrNull { it.name == name }
+            val value = name?.let { params[it] ?: param?.defaultValue }
+            val replacement = when {
+                param == null -> ""
+                param.parameterType == ParameterType.FLAG || param.parameterType == ParameterType.BOOLEAN -> {
+                    if (value == "true" || value == "1" || value == "yes") {
+                        customTemplate ?: param.flag.orEmpty()
+                    } else {
+                        ""
+                    }
+                }
+                value.isNullOrBlank() -> ""
+                customTemplate != null -> customTemplate.replace("{${param.name}}", sanitize(value))
+                param.flag != null -> "${param.flag} ${quoteIfNeeded(sanitize(value))}"
+                else -> sanitize(value)
+            }
+
+            result.append(replacement)
+            index = cursor
+        }
+
+        return result.toString()
     }
 
     private fun buildFromParameters(toolName: String, parameters: List<Parameter>, params: Map<String, String>): String {
@@ -46,7 +104,7 @@ class CommandBuilder @Inject constructor() {
 
             when {
                 param.isPositional -> positionals.add(safeValue)
-                param.parameterType == ParameterType.FLAG -> {
+                param.parameterType == ParameterType.FLAG || param.parameterType == ParameterType.BOOLEAN -> {
                     if (value == "true") param.flag?.let { parts.add(it) }
                 }
                 param.flag != null -> {
