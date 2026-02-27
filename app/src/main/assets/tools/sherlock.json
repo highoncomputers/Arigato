@@ -1,0 +1,61 @@
+{
+  "id": "sherlock",
+  "name": "Sherlock",
+  "packageName": "sherlock",
+  "description": "Find usernames across social networks. Sherlock hunts down social media accounts by username across social networks.",
+  "useCases": [
+    "Username reconnaissance across social media",
+    "OSINT investigation on individuals",
+    "Digital footprint analysis",
+    "Identity verification"
+  ],
+  "category": "OSINT",
+  "parameters": [
+    {
+      "name": "username",
+      "type": "TEXT",
+      "description": "Username to search for",
+      "isRequired": true,
+      "isPositional": true,
+      "validation": {"hint": "e.g., johndoe"}
+    },
+    {
+      "name": "output",
+      "flag": "--output",
+      "type": "FILE_PATH",
+      "description": "Output file path",
+      "isRequired": false
+    },
+    {
+      "name": "timeout",
+      "flag": "--timeout",
+      "type": "NUMBER",
+      "description": "Request timeout in seconds",
+      "isRequired": false,
+      "defaultValue": "60",
+      "validation": {"minValue": 1, "maxValue": 300}
+    },
+    {
+      "name": "site",
+      "flag": "--site",
+      "type": "TEXT",
+      "description": "Limit analysis to a specific site",
+      "isRequired": false
+    },
+    {
+      "name": "tor",
+      "flag": "--tor",
+      "type": "FLAG",
+      "description": "Use Tor for requests",
+      "isRequired": false
+    }
+  ],
+  "commandTemplate": "sherlock {username}",
+  "examples": [
+    {"command": "sherlock johndoe", "description": "Search for username 'johndoe'"},
+    {"command": "sherlock johndoe --output results.txt", "description": "Search and save results"},
+    {"command": "sherlock johndoe --site twitter --site instagram", "description": "Search specific sites only"}
+  ],
+  "requiresRoot": false,
+  "tags": ["osint", "username", "social-media", "recon"]
+}

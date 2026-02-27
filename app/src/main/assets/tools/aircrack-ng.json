@@ -1,0 +1,52 @@
+{
+  "id": "aircrack-ng",
+  "name": "Aircrack-ng",
+  "packageName": "aircrack-ng",
+  "description": "Complete suite of tools to assess WiFi network security. Focuses on different areas of WiFi security including monitoring, attacking, testing, and cracking.",
+  "useCases": [
+    "WEP and WPA/WPA2-PSK cracking",
+    "Monitor mode and packet capture",
+    "Replay attacks and deauthentication",
+    "Wireless network security auditing"
+  ],
+  "category": "WIRELESS",
+  "parameters": [
+    {
+      "name": "capFile",
+      "type": "FILE_PATH",
+      "description": "Capture file (.cap or .ivs)",
+      "isRequired": true,
+      "isPositional": true,
+      "validation": {"hint": "/path/to/capture.cap"}
+    },
+    {
+      "name": "wordlist",
+      "flag": "-w",
+      "type": "WORDLIST",
+      "description": "Wordlist for WPA cracking",
+      "isRequired": false
+    },
+    {
+      "name": "bssid",
+      "flag": "-b",
+      "type": "TEXT",
+      "description": "Target AP BSSID",
+      "isRequired": false,
+      "validation": {"hint": "e.g., AA:BB:CC:DD:EE:FF"}
+    },
+    {
+      "name": "essid",
+      "flag": "-e",
+      "type": "TEXT",
+      "description": "Target AP ESSID (network name)",
+      "isRequired": false
+    }
+  ],
+  "commandTemplate": "aircrack-ng {capFile} -w {wordlist}",
+  "examples": [
+    {"command": "aircrack-ng capture.cap -w /usr/share/wordlists/rockyou.txt", "description": "WPA cracking with wordlist"},
+    {"command": "aircrack-ng capture.cap -b AA:BB:CC:DD:EE:FF -w wordlist.txt", "description": "Target specific AP"}
+  ],
+  "requiresRoot": true,
+  "tags": ["wireless", "wifi", "wpa", "wep", "cracking"]
+}

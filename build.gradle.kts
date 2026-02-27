@@ -1,1 +1,7 @@
-plugins {\n    id(\"com.android.application\")\n    id(\"kotlin-android\")\n}\n\nandroid {\n    compileSdk = 33\n    defaultConfig {\n        applicationId = \"com.example.arigato\"\n        minSdk = 21\n        targetSdk = 33\n        versionCode = 1\n        versionName = \"1.0\"\n    }\n\n    buildTypes {\n        release {\n            isMinifyEnabled = false\n            proguardFiles(getDefaultProguardFile(\"proguard-android-optimize.txt\"), \"proguard-rules.pro\")\n        }\n    }\n}\n\ndependencies {\n    implementation(\"org.jetbrains.kotlin:kotlin-stdlib:1.8.0\")\n    implementation(\"androidx.lifecycle:lifecycle-viewmodel-ktx:2.5.1\") // MVVM\n    implementation(\"com.google.android.material:material:1.7.0\") // Material3\n    implementation(\"androidx.room:room-ktx:2.5.1\") // Room\n    kapt(\"androidx.room:room-compiler:2.5.1\")\n    implementation(\"androidx.datastore:datastore-preferences:1.0.0\") // DataStore\n    implementation(\"org.jetbrains.kotlinx:kotlinx-coroutines-android:1.6.0\") // Coroutines\n}
+plugins {
+    id("com.android.application") version "8.1.2" apply false
+    id("com.android.library") version "8.1.2" apply false
+    id("org.jetbrains.kotlin.android") version "1.9.10" apply false
+    id("org.jetbrains.kotlin.plugin.serialization") version "1.9.10" apply false
+    id("com.google.dagger.hilt.android") version "2.48" apply false
+}

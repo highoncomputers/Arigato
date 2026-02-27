@@ -1,0 +1,5 @@
+-keep class com.arigato.app.domain.entity.** { *; }
+-keep class com.arigato.app.data.local.database.entity.** { *; }
+-keepattributes *Annotation*
+-keepattributes Signature
+-dontwarn kotlinx.serialization.**

@@ -1,0 +1,45 @@
+{
+  "id": "metasploit",
+  "name": "Metasploit Framework",
+  "packageName": "msfconsole",
+  "description": "World's most used penetration testing framework. The Metasploit Framework contains a suite of tools that you can use to test security vulnerabilities, enumerate networks, execute attacks, and evade detection.",
+  "useCases": [
+    "Exploitation of known vulnerabilities",
+    "Payload generation and delivery",
+    "Post-exploitation activities",
+    "Security research and testing"
+  ],
+  "category": "EXPLOITATION",
+  "parameters": [
+    {
+      "name": "module",
+      "flag": "-x",
+      "type": "TEXT",
+      "description": "Execute msfconsole commands on startup",
+      "isRequired": false
+    },
+    {
+      "name": "quiet",
+      "flag": "-q",
+      "type": "FLAG",
+      "description": "Quiet mode (no banner)",
+      "isRequired": false,
+      "defaultValue": "true"
+    },
+    {
+      "name": "resource",
+      "flag": "-r",
+      "type": "FILE_PATH",
+      "description": "Resource file to execute",
+      "isRequired": false
+    }
+  ],
+  "commandTemplate": "msfconsole -q",
+  "examples": [
+    {"command": "msfconsole -q", "description": "Start Metasploit console"},
+    {"command": "msfconsole -q -x 'use exploit/multi/handler; set PAYLOAD windows/meterpreter/reverse_tcp; run'", "description": "Launch with commands"},
+    {"command": "msfconsole -q -r setup.rc", "description": "Load resource file"}
+  ],
+  "requiresRoot": false,
+  "tags": ["exploitation", "pentest", "payload", "interactive"]
+}
