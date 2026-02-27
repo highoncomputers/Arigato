@@ -73,10 +73,12 @@ private fun ArigatoBottomNavigation(navController: NavController) {
         Screen.Splash.route,
         Screen.ToolDetail.route,
         Screen.Execution.route,
+        Screen.Workflow.route,
         "tool/{toolId}",
-        "execute/{toolId}"
+        "execute/{toolId}",
+        "workflow/{workflowId}"
     )
-    val shouldHide = hideOnRoutes.any { currentRoute?.startsWith(it.replace("{toolId}", "")) == true }
+    val shouldHide = hideOnRoutes.any { currentRoute?.startsWith(it.replace("{toolId}", "").replace("{workflowId}", "")) == true }
 
     if (!shouldHide) {
         NavigationBar {

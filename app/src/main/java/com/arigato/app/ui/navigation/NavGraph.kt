@@ -14,8 +14,10 @@ import com.arigato.app.ui.screens.SettingsScreen
 import com.arigato.app.ui.screens.SplashScreen
 import com.arigato.app.ui.screens.ToolDetailScreen
 import com.arigato.app.ui.screens.ToolListScreen
+import com.arigato.app.ui.screens.WorkflowScreen
 
 sealed class Screen(val route: String) {
+    data object Splash : Screen("splash")
     data object Home : Screen("home")
     data object ToolList : Screen("tools?category={category}") {
         fun withCategory(category: String?) =
@@ -26,6 +28,9 @@ sealed class Screen(val route: String) {
     }
     data object Execution : Screen("execute/{toolId}") {
         fun withId(toolId: String) = "execute/$toolId"
+    }
+    data object Workflow : Screen("workflow/{workflowId}") {
+        fun withId(workflowId: String) = "workflow/$workflowId"
     }
     data object History : Screen("history")
     data object Settings : Screen("settings")
@@ -59,6 +64,9 @@ fun ArigatoNavGraph(
                 },
                 onNavigateToHistory = {
                     navController.navigate(Screen.History.route)
+                },
+                onNavigateToWorkflow = { workflowId ->
+                    navController.navigate(Screen.Workflow.withId(workflowId))
                 }
             )
         }
@@ -104,6 +112,13 @@ fun ArigatoNavGraph(
             ExecutionScreen(
                 onNavigateBack = { navController.popBackStack() }
             )
+        }
+
+        composable(
+            route = Screen.Workflow.route,
+            arguments = listOf(navArgument("workflowId") { type = NavType.StringType })
+        ) {
+            WorkflowScreen(onNavigateBack = { navController.popBackStack() })
         }
 
         composable(Screen.History.route) {

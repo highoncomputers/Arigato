@@ -1,5 +1,6 @@
 package com.arigato.app.core.intelligence
 
+import com.arigato.app.core.analytics.ExecutionAnalytics
 import com.arigato.app.domain.entity.Tool
 import com.arigato.app.domain.entity.ToolCategory
 import com.arigato.app.domain.entity.ToolSuggestion
@@ -9,10 +10,12 @@ import javax.inject.Inject
 import javax.inject.Singleton
 
 @Singleton
-class SuggestionEngine @Inject constructor() {
+class SuggestionEngine @Inject constructor(
+    private val analytics: ExecutionAnalytics
+) {
     private val workflowDefinitions: List<Workflow> = buildWorkflows()
 
-    fun suggestNextTools(currentTool: Tool, allTools: List<Tool>): List<ToolSuggestion> {
+    suspend fun suggestNextTools(currentTool: Tool, allTools: List<Tool>): List<ToolSuggestion> {
         val suggestions = mutableListOf<ToolSuggestion>()
         val currentCategory = currentTool.toolCategory
 
@@ -28,17 +31,22 @@ class SuggestionEngine @Inject constructor() {
             allTools.filter { it.toolCategory == nextCategory }
                 .take(3)
                 .forEach { tool ->
+                    val analyticsScore = analytics.getRelevanceScore(tool.id, currentTool.id)
+                    val relevance = if (analyticsScore > 0f) analyticsScore else 0.75f
                     suggestions.add(
                         ToolSuggestion(
                             tool = tool,
-                            relevance = 0.75f,
-                            reason = "Commonly used after ${currentTool.name}"
+                            relevance = relevance,
+                            reason = if (analyticsScore > 0f)
+                                "Frequently used after ${currentTool.name}"
+                            else
+                                "Commonly used after ${currentTool.name}"
                         )
                     )
                 }
         }
 
-        return suggestions.take(5)
+        return suggestions.sortedByDescending { it.relevance }.take(5)
     }
 
     fun suggestByKeyword(keyword: String, allTools: List<Tool>): List<ToolSuggestion> {
