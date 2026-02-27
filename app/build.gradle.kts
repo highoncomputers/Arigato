@@ -107,8 +107,8 @@ dependencies {
     implementation("org.jetbrains.kotlinx:kotlinx-coroutines-android:1.7.3")
     implementation("org.jetbrains.kotlinx:kotlinx-serialization-json:1.6.2")
 
-    implementation("com.termux:terminal-emulator:0.118.0")
-    implementation("com.termux:terminal-view:0.118.0")
+    implementation("com.github.termux.termux-app:terminal-emulator:v0.118.0")
+    implementation("com.github.termux.termux-app:terminal-view:v0.118.0")
     implementation("io.noties.markwon:core:4.6.2")
     implementation("androidx.security:security-crypto:1.1.0-alpha06")
 
