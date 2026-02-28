@@ -3,7 +3,6 @@ package com.arigato.app.ui.viewmodel
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.arigato.app.core.root.RootDetector
-import com.arigato.app.core.runtime.RuntimeManager
 import com.arigato.app.domain.repository.IToolRepository
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.flow.MutableStateFlow
@@ -23,7 +22,6 @@ data class SplashUiState(
 
 @HiltViewModel
 class SplashViewModel @Inject constructor(
-    private val runtimeManager: RuntimeManager,
     private val toolRepository: IToolRepository,
     private val rootDetector: RootDetector
 ) : ViewModel() {
@@ -37,17 +35,14 @@ class SplashViewModel @Inject constructor(
     private fun initialize() {
         viewModelScope.launch {
             runCatching {
-                runtimeManager.initialize { step, progress ->
-                    _uiState.value = _uiState.value.copy(message = step, progress = progress)
-                }
-
+                _uiState.value = _uiState.value.copy(message = "Loading tools", progress = 0.3f)
                 val count = toolRepository.getToolCount().first()
                 if (count == 0) {
-                    _uiState.value = _uiState.value.copy(message = "Loading tool schemas")
+                    _uiState.value = _uiState.value.copy(message = "Loading tool schemas", progress = 0.5f)
                     toolRepository.loadToolsFromAssets()
                 }
 
-                _uiState.value = _uiState.value.copy(message = "Checking root access")
+                _uiState.value = _uiState.value.copy(message = "Checking root access", progress = 0.7f)
                 val rooted = rootDetector.isDeviceRooted()
 
                 _uiState.value = _uiState.value.copy(
