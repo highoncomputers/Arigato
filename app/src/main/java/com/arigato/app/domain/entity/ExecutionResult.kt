@@ -2,6 +2,7 @@ package com.arigato.app.domain.entity
 
 import kotlinx.serialization.Serializable
 
+@Serializable
 enum class ExecutionStatus {
     QUEUED,
     RUNNING,
@@ -28,6 +29,7 @@ sealed class OutputLine {
     data class Exit(val code: Int, override val timestamp: Long = System.currentTimeMillis()) : OutputLine()
 }
 
+@Serializable
 data class ExecutionRecord(
     val id: Long = 0,
     val toolId: String,
