@@ -53,7 +53,7 @@ fun SplashScreen(
             color = MaterialTheme.colorScheme.onSurfaceVariant
         )
         Spacer(modifier = Modifier.height(12.dp))
-        LinearProgressIndicator(progress = { uiState.progress })
+        LinearProgressIndicator(progress = uiState.progress)
         uiState.error?.let { error ->
             Spacer(modifier = Modifier.height(8.dp))
             Text(
