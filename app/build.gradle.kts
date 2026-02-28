@@ -98,10 +98,6 @@ dependencies {
     ksp("com.google.dagger:hilt-compiler:2.48")
     implementation("androidx.hilt:hilt-navigation-compose:1.1.0")
 
-    implementation("androidx.room:room-runtime:2.6.1")
-    implementation("androidx.room:room-ktx:2.6.1")
-    ksp("androidx.room:room-compiler:2.6.1")
-
     implementation("androidx.datastore:datastore-preferences:1.0.0")
 
     implementation("org.jetbrains.kotlinx:kotlinx-coroutines-android:1.7.3")
@@ -124,17 +120,4 @@ dependencies {
     androidTestImplementation("androidx.test.ext:junit:1.1.5")
     androidTestImplementation("androidx.test.espresso:espresso-core:3.5.1")
     androidTestImplementation("androidx.compose.ui:ui-test-junit4")
-}
-
-ksp {
-    arg("room.schemaLocation", "$projectDir/schemas")
-    arg("room.incremental", "true")
-    arg("room.expandProjection", "true")
-    arg("room.verifyDatabase", "false")
-    // Completely disable database verification at the processor level
-    // This prevents SQLite JDBC from being loaded during annotation processing
-    arg("room.disableDatabaseVerification", "true")
-    arg("room.schemaVerificationType", "NONE")
-    // Skip entity validation during compilation (safe for development)
-    arg("room.skipEntityValidation", "true")
 }
